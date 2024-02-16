@@ -1,13 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { Carousel } from "@material-tailwind/react";
+import { useEffect, useState } from "react"
 import GlobalApi from "../Services/GlobalApi"
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi2"
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'
-const screenWidth = window.innerWidth
-console.log(screenWidth)
 
 const Slider = () => {
   const [movieList, setMovieList] = useState([])
-  const elementRef = useRef()
   useEffect(() => {
     getTrendingMovies()
   },[])
@@ -19,29 +16,30 @@ const Slider = () => {
     )
   }
 
-  const sliderRight = () => {
-    elementRef.current.scrollLeft += screenWidth - 150;
-    scrollToCenter(elementRef.current);
-  }
-  
-  const sliderLeft = () => {
-    elementRef.current.scrollLeft -= screenWidth - 150;
-    scrollToCenter(elementRef.current);
-  }
-
-  
-
   return (
     <div>
-        <HiChevronLeft className="hidden md:block text-white text-[30px] absolute mx-8 mt-[150px]" 
-        onClick={() => sliderLeft(elementRef.current)}/>
-        <HiChevronRight className="hidden md:block text-white text-[30px] absolute mx-8 mt-[150px] right-0" 
-        onClick={() => sliderRight(elementRef.current)}/>
-        <div className="flex overflow-x-auto w-full px-16 py-4 scrollbar-hide scroll-smooth" ref={elementRef}>
-        {movieList.map((item, index) => (
-        <img src={IMAGE_BASE_URL + item.backdrop_path} className="min-w-full h-[310px] object-cover object-left-top mr-5 rounded-md "/>
-        ))}
+        <Carousel
+        loop={true}
+        autoplay={true}
+        className="rounded-xl"
+        navigation={({ setActiveIndex, activeIndex, length }) => (
+        <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
+          {new Array(length).fill("").map((_, i) => (
+            <span
+              key={i}
+              className={`block h-1 cursor-pointer rounded-2xl transition-all content-[''] ${
+                activeIndex === i ? "w-8 bg-white" : "w-4 bg-white/50"
+              }`}
+              onClick={() => setActiveIndex(i)}
+            />
+          ))}
         </div>
+        )}
+        >
+        {movieList.map((item, index) => (
+        <img src={IMAGE_BASE_URL + item.backdrop_path} className="transition-all duration-75 ease-in-out hover:border-[4px] border-gray-100 min-w-full h-[310px] object-cover object-left-top mr-5 rounded-xl "/>
+        ))}
+        </Carousel>
     </div>
   )
 }
